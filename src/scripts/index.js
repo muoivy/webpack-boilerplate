@@ -1,16 +1,8 @@
 import _ from 'lodash';
-import '../styles/style.css';
+import '../styles/style.scss';
 
 function component() {
-  const element = document.createElement('div');
-  const btn = document.createElement('button');
-
-  // Lodash, now imported by this script
-  element.innerHTML = _.join(['Hello', 'webpackd'], ' ');
-  element.classList.add('hello');
-
-
-  return element;
+  console.log('dsdsd');
 }
 
-document.body.appendChild(component());
+component()
