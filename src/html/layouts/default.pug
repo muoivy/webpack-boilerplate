@@ -1,21 +1,50 @@
+block vars
+  - var img = require('Images/common/ogp.png');
+
 doctype html
-html(lang="en")
-	head
-		block head
-			meta(charset="UTF-8")
-			meta(http-equiv="X-UA-Compatible", content="IE=edge")
-			meta(name="viewport",content="width=device-width, initial-scale=1")
-			meta(name="description",content="")
-			meta(name="author",content="")
-			link(rel="icon",href="../../favicon.ico")
-			title= title
-			block styles
-				link(rel="stylesheet",href="dist/style.css")
-	body(data-spy="scroll",data-target=".scrollspy")
-		block body
-			
-		block scripts
-			script(src="/scripts/ajax/libs/jquery/1.11.2/jquery.min.js")
-			script(src="/scripts/bootstrap/3.3.4/js/bootstrap.min.js")
-	//-		script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js")
-	//-		script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js")
+html(lang="ja")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="format-detection" content="telephone=no")
+
+    title=title
+    meta(name="title" content=title)
+    meta(name="description" content=description)
+
+    //- og
+    meta(property="og:type" content="website")
+    meta(property="og:locale" content="ja_JP")
+    meta(property="og:site_name" content=title)
+    meta(property="og:url" content=url)
+    meta(property="og:title" content=title)
+    meta(property="og:description" content=description)
+    meta(property="og:image" content=img)
+
+    //- twitter
+    meta(name="twitter:card" content="summary_large_image")
+
+    link(rel="icon" href=require('Images/common/favicon.png'))
+    link(rel="canonical" href=url)
+
+    //- style
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap")
+    link(rel='stylesheet' href=require('Styles/layout.scss'))
+
+  body(data-module='Dummy')
+
+    #wrapper
+
+      include ../layouts/header
+      // .l-header
+
+      block main
+      // .l-main
+
+      include ../layouts/footer
+      // .l-footer
+
+    block end_of_body
+      script(src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+      script(src=require('Scripts/common.ts'))

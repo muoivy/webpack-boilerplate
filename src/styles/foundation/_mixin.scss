@@ -1,0 +1,117 @@
+// CSS Document
+$design_width_pc: 1920;
+$design_width_sp: 320;
+$root_font_size: 16;
+$breakpoint: (
+  sp: 'only screen and (max-width: 768px)',
+  tab: 'only screen and (min-width: 769px)',
+  pc: 'only screen and (min-width: 769px)'
+);
+
+// Set vw with viewport PC
+@function vw_pc($design_width_psd) {
+  $vw: calc($design_width_psd / $design_width_pc) * 100vw;
+  @return #{$vw};
+}
+
+// Set vw with viewport SP
+@function vw_sp($design_width_psd) {
+  $vw: calc($design_width_psd / $design_width_sp) * 100vw;
+  @return #{$vw};
+}
+
+
+// font ---------------------------------------------------------------------------
+@mixin font_size($font_size, $font_weight: null, $line_height: null, $letter_spacing: null) {
+  font-size: $font_size * 1px;
+  // font-size: $font-size * 0.1rem;
+  // example using rem values and 62.5% font-size so 1rem = 10px
+
+  @if $font_weight != null {
+    font-weight: $font_weight;
+  }
+
+  @if $line_height != null {
+    line-height: calc($line_height / $font_size);
+  }
+
+  @if $letter_spacing != null {
+    letter-spacing: calc($letter_spacing / 1000) * 1em;
+  }
+}
+
+@mixin font_size_sp($font_size, $font_weight: null, $line_height: null, $letter_spacing: null) {
+  font-size: calc($font_size / $design_width_sp) * 100vw;
+
+  @if $font_weight != null {
+    font-weight: $font_weight;
+  }
+
+  @if $line_height != null {
+    line-height: calc($line_height / $font_size);
+  }
+
+  @if $letter_spacing != null {
+    letter-spacing: calc($letter_spacing / 1000) * 1em;
+  }
+}
+
+@function font_rem($font_size_px) {
+  $font_rem: calc($font_size-px / $root_font_size) * 1rem;
+  @return #{$font_rem};
+}
+
+
+// breakpoint ---------------------------------------------------------------------------
+
+@mixin mq($bp) {
+  @media #{map-get($breakpoint, $bp)} {
+   @content;
+  }
+}
+
+// Flexbox Toolkit ---------------------------------------------------------------------------
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-center-column {
+  @include flex-center;
+  flex-direction: column;
+}
+
+@mixin flex-center-vert {
+  display: flex;
+  align-items: center;
+}
+
+@mixin flex-center-horiz {
+  display: flex;
+  justify-content: center;
+}
+
+// Background ---------------------------------------------------------------------------
+@mixin background-image($background-size: cover) {
+  background-size: $background-size;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+// Font face ---------------------------------------------------------------------------
+@mixin font-face($font-name, $path, $weight: normal, $style: normal, $display: swap) {
+  @font-face {
+    font-family: quote($font-name);
+    src: url($path+'.woff') format('woff'),
+         url($path+'.woff2') format('woff2');
+    font-weight: $weight;
+    font-style: $style;
+    font-display: $display;
+  }
+}

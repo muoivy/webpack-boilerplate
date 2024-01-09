@@ -1,80 +1,116 @@
-const path = require('path')
+const path = require('path');
 const paths = require('./paths');
-const fs = require('fs');
-const globule = require('globule');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const PugPlugin = require('pug-plugin');
+const glob = require('glob');
 
-// Look for .pug files
-const pugFiles = globule.find('./src/html/page/**/*.pug', {
-  ignore: [ './src/html/components/**/*','./src/html.layouts/**/*' ]
-});
+module.exports = {
+  entry: getEntryPoints(),
 
-const buildDefault = {
-  entry: [paths.src + '/scripts/index.js'],
   output: {
     path: paths.build,
-    filename: 'assets/js/[name].bundle.js',
+    publicPath: '/',
     clean: true,
   },
-  optimization: {
-    runtimeChunk: 'single',
+
+  devServer: {
+    static: {
+      directory: paths.build,
+    },
+    watchFiles: {
+      paths: ['src/**/*.*'],
+      options: {
+        usePolling: true,
+      },
+    },
   },
+
+  resolve: {
+    alias: {
+      // use alias to avoid relative paths like `./../../images/`
+      Images: path.join(__dirname, '../src/images/'),
+      Fonts: path.join(__dirname, '../src/fonts/'),
+      Styles: path.join(__dirname, '../src/styles/'),
+      Scripts: path.join(__dirname, '../src/scripts/')
+    },
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+
+  plugins: [
+    new PugPlugin({
+      pretty: true, // formatting HTML, useful for development mode
+      js: {
+        // output filename of extracted JS file from source script
+        filename: 'assets/js/[name].[contenthash:8].js',
+      },
+      css: {
+        // output filename of extracted CSS file from source style
+        filename: 'assets/css/[name].[contenthash:8].css',
+      },
+    }),
+  ],
+
   module: {
     rules: [
       {
         test: /\.pug$/,
-        exclude: /node_modules/,
-        use: [
+        oneOf: [
+          // import Pug in JavaScript/TypeScript as template function
           {
-            loader: 'pug-loader',
+            issuer: /\.(js|ts)$/,
+            loader: PugPlugin.loader,
             options: {
-              pretty: true
-            }
-          }
-        ]
+              method: 'compile',
+            },
+          },
+          // render Pug from Webpack entry into static HTML
+          {
+            loader: PugPlugin.loader,
+          },
+        ],
+        // loader: PugPlugin.loader, // Pug loader
       },
       {
-        test: /\.(scss|sass|css)$/i,
-        use: [ MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        test: /\.(css|sass|scss)$/,
+        use: ['css-loader', 'sass-loader'],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.(png|svg|jpe?g|gif)$/i,
         type: 'asset/resource',
         generator: {
-          filename: 'assets/img/[name][ext][query]',
+          // output filename of images
+          // filename: 'assets/img/[name][ext][query]',
+          filename: (pathData) => {
+            const { dir } = path.parse(pathData.filename); // get relative path started with `src/...`
+            const outputPath = dir.replace('src/images', 'assets/img'); // remove the source dir from path
+            return outputPath + '/[name][ext]'; // return output path with resource filename
+          },
         },
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        test: /\.(woff|woff2|eot|ttf|otf|svg)$/i,
         type: 'asset/resource',
         generator: {
-          filename: 'assets/fonts/[name][ext][query]',
+          // output filename of fonts
+          filename: 'assets/fonts/[name][ext]',
         },
       },
     ],
   },
-  plugins: [
-    new MiniCssExtractPlugin({
-      // Options similar to the same options in webpackOptions.output
-      // both options are optional
-      filename: "assets/css/[name].css",
-    }),
-  ],
 };
 
+function getEntryPoints() {
+  const entryPoints = {};
+  const files = glob.sync('./src/html/pages/**/*.pug'); // Adjust the glob pattern to include subfolders
 
-pugFiles.forEach((pug) => {
-  // const html = pug.split('/').slice(-1)[0].replace('.pug', '.html');
-  const html = pug.replace('./src/html/page/', '').replace('.pug', '.html')
-  buildDefault.plugins.push(
-    new HtmlWebpackPlugin({
-      filename: `${path.resolve(__dirname, '../dist')}/${html}`,
-      inject:'body',
-      template: pug,
-      minify: false
-    })
-  )
-});
+  files.forEach(file => {
+    const entryName = path.relative('./src/html/pages', file).replace(/\.[^/.]+$/, ''); // Adjust as needed
+    entryPoints[entryName] = file;
+  });
 
-module.exports = buildDefault;
+  return entryPoints;
+}

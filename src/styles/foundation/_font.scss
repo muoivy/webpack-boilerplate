@@ -1,0 +1,9 @@
+// @font-face {
+//   font-family: 'Couture';
+//   src: url('../fonts/Couture.woff2') format('woff2'),
+//        url('../fonts/Couture.woff') format('woff'),
+//        url('../fonts/Couture.ttf') format('truetype'),
+//        url('../fonts/Couture.svg#Couture') format('svg');
+// }
+
+@include font-face('Couture','Fonts/Couture', 400, normal, swap);

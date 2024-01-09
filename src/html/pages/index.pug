@@ -1,0 +1,14 @@
+extend ../layouts/default
+
+append vars
+  - var page = 'top';
+  - var title = 'Demo page';
+  - var description = '';
+  - var url = '';
+
+block main
+  main.l-main
+    h1.logo
+      img(src=require('Images/icon.png') alt="pug logo")
+    h2 TOP PAGE
+    a(href="/sub") link sub
