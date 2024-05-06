@@ -12,7 +12,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const environment = require('./configuration/environment');
 
 const templateFiles = fs
-  .readdirSync(environment.paths.source)
+  .readdirSync(environment.paths.html)
   .filter((file) => ['.html', '.ejs'].includes(path.extname(file).toLowerCase()))
   .map((filename) => ({
     input: filename,
@@ -20,19 +20,18 @@ const templateFiles = fs
   }));
 
 const htmlPluginEntries = templateFiles.map(
-  (template) =>
-    new HTMLWebpackPlugin({
-      inject: true,
-      hash: false,
-      filename: template.output,
-      template: path.resolve(environment.paths.source, template.input),
-      // favicon: path.resolve(environment.paths.source, 'images', 'favicon.ico'),
-    })
+  (template) => new HTMLWebpackPlugin({
+    inject: true,
+    hash: false,
+    filename: template.output,
+    template: path.resolve(environment.paths.html, template.input),
+    // favicon: path.resolve(environment.paths.source, 'images', 'favicon.ico'),
+  }),
 );
 
 module.exports = {
   entry: {
-    app: path.resolve(environment.paths.source, 'js', 'app.js'),
+    app: path.resolve(environment.paths.script, 'app.js'),
   },
   output: {
     filename: 'assets/js/[name].js',
@@ -117,7 +116,7 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(environment.paths.source, 'images'),
+          from: path.resolve(environment.paths.source, 'static/images'),
           to: path.resolve(environment.paths.output, 'assets/img'),
           toType: 'dir',
           globOptions: {
@@ -125,7 +124,7 @@ module.exports = {
           },
         },
         {
-          from: path.resolve(environment.paths.source, 'videos'),
+          from: path.resolve(environment.paths.source, 'static/videos'),
           to: path.resolve(environment.paths.output, 'assets/videos'),
           toType: 'dir',
           globOptions: {
