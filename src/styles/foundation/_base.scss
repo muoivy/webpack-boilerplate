@@ -13,7 +13,7 @@ html {
 
 body {
   background: #fff;
-  font-family: 'Gill Sans Regular';
+  font-family: $noto_sans;
   @include font_size(16, null, 24, 50);
   color: $base_color;
   -webkit-text-size-adjust: 100%;
