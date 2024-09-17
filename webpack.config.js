@@ -11,9 +11,24 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const environment = require('./configuration/environment');
 
-const templateFiles = fs
-  .readdirSync(environment.paths.html)
-  .filter((file) => ['.html', '.ejs'].includes(path.extname(file).toLowerCase()))
+const getFileList = (dirName) => {
+  let files = [];
+  const items = fs.readdirSync(dirName, { withFileTypes: true });
+
+  for (const item of items) {
+    if (item.isDirectory()) {
+      files = [...files, ...getFileList(`${dirName}/${item.name}`)];
+    } else {
+      files.push(`${dirName}/${item.name}`);
+    }
+  }
+
+  return files;
+};
+
+const templateFiles = getFileList(environment.paths.html)
+  .filter((filename) => ['.html', '.ejs'].includes(path.extname(filename).toLowerCase()))
+  .map((filename) => (filename.replace(environment.paths.html + '/', '')))
   .map((filename) => ({
     input: filename,
     output: filename.replace(/\.ejs$/, '.html'),
@@ -31,7 +46,7 @@ const htmlPluginEntries = templateFiles.map(
 
 module.exports = {
   entry: {
-    app: path.resolve(environment.paths.script, 'app.js'),
+    app: path.resolve(environment.paths.source + '/scripts/', 'app.js'),
   },
   output: {
     filename: 'assets/js/[name].js',

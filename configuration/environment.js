@@ -7,8 +7,6 @@ module.exports = {
 
     html: path.resolve(__dirname, '../src/html/'),
 
-    script: path.resolve(__dirname, '../src/scripts/'),
-
     /* Path to built files directory */
     output: path.resolve(__dirname, '../dist/'),
   },
